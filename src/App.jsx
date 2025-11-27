@@ -106,7 +106,7 @@ function App() {
 
         {!isLoading && !error && videos.length === 0 && !searchKeyword && (
           <div className="welcome-message">
-            <h2>📺 TubeRay[센트리언전용]에 오신 것을 환영합니다</h2>
+            <h2>📺 TubeRay에 오신 것을 환영합니다</h2>
             <p>왼쪽 검색창에서 키워드를 입력하고 옵션을 선택한 후 검색하세요.</p>
           </div>
         )}
