@@ -77,6 +77,9 @@ const SearchBar = ({ onSearch, onFilterChange, isLoading }) => {
               <option value={10}>10개</option>
               <option value={50}>50개</option>
               <option value={100}>100개</option>
+              <option value={200}>200개</option>
+              <option value={300}>300개</option>
+              <option value={500}>500개</option>
             </select>
           </div>
 
