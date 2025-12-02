@@ -48,7 +48,7 @@ const SearchBar = ({ onSearch, onFilterChange, isLoading }) => {
   return (
     <div className="search-bar-container">
       <h1 className="title">📺 TubeRay</h1>
-      <p className="subtitle">YouTube 영상 검색 및 분석 도구[센트리언 전용]</p>
+      <p className="subtitle">YouTube 영상 검색 및 분석 도구</p>
 
       {/* 검색 섹션 */}
       <div className="section-header">🔍 검색</div>
