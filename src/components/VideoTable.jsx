@@ -3,53 +3,65 @@ import { formatNumber, formatDate, formatDuration } from '../utils/youtube';
 import './VideoTable.css';
 
 const VideoTable = ({ videos, keyword }) => {
-  const [sortConfig, setSortConfig] = useState({ key: null, direction: 'desc' });
-
+  const [sortConfig, setSortConfig] = useState({ key: null, direction: null });
 
   const handleSort = (key) => {
-    let direction = 'desc';
-
-    if (sortConfig.key === key && sortConfig.direction === 'desc') {
-      direction = 'asc';
-    }
-
-    setSortConfig({ key, direction });
+    setSortConfig((prevConfig) => {
+      // 같은 열을 클릭한 경우
+      if (prevConfig.key === key) {
+        // desc -> asc -> none -> desc 순환
+        if (prevConfig.direction === 'desc') {
+          return { key, direction: 'asc' };
+        } else if (prevConfig.direction === 'asc') {
+          return { key: null, direction: null }; // 정렬 해제
+        }
+      }
+      // 새로운 열을 클릭하거나 정렬 해제 상태에서 클릭
+      return { key, direction: 'desc' };
+    });
   };
 
   const getSortedVideos = () => {
-    if (!sortConfig.key) {
+    if (!sortConfig.key || !sortConfig.direction) {
       return videos;
     }
 
-    const sorted = [...videos].sort((a, b) => {
-      const aValue = a[sortConfig.key];
-      const bValue = b[sortConfig.key];
+    return [...videos].sort((a, b) => {
+      let aValue = a[sortConfig.key];
+      let bValue = b[sortConfig.key];
 
-      // 숫자 비교
-      if (typeof aValue === 'number' || typeof aValue === 'string') {
-        const aNum = Number(aValue);
-        const bNum = Number(bValue);
+      // 숫자 필드들
+      const numericFields = [
+        'viewCount', 'likeCount', 'commentCount', 'subscriberCount',
+        'channelContribution', 'performanceMultiplier', 'durationInSeconds'
+      ];
 
-        if (!isNaN(aNum) && !isNaN(bNum)) {
-          return sortConfig.direction === 'desc' ? bNum - aNum : aNum - bNum;
-        }
+      // 날짜 필드 (publishedAt)
+      if (sortConfig.key === 'publishedAt') {
+        aValue = new Date(aValue).getTime();
+        bValue = new Date(bValue).getTime();
+        const comparison = bValue - aValue; // 내림차순 기준
+        return sortConfig.direction === 'desc' ? comparison : -comparison;
       }
 
-      // 문자열 비교
-      if (typeof aValue === 'string' && typeof bValue === 'string') {
-        return sortConfig.direction === 'desc'
-          ? bValue.localeCompare(aValue)
-          : aValue.localeCompare(bValue);
+      // 숫자 필드
+      if (numericFields.includes(sortConfig.key)) {
+        aValue = Number(aValue) || 0;
+        bValue = Number(bValue) || 0;
+        const comparison = bValue - aValue; // 내림차순 기준
+        return sortConfig.direction === 'desc' ? comparison : -comparison;
       }
 
-      return 0;
+      // 문자열 필드 (title, channelTitle)
+      aValue = String(aValue);
+      bValue = String(bValue);
+      const comparison = bValue.localeCompare(aValue, 'ko-KR'); // 내림차순 기준
+      return sortConfig.direction === 'desc' ? comparison : -comparison;
     });
-
-    return sorted;
   };
 
   const getSortIcon = (key) => {
-    if (sortConfig.key !== key) {
+    if (sortConfig.key !== key || !sortConfig.direction) {
       return '⇅';
     }
     return sortConfig.direction === 'desc' ? '▼' : '▲';

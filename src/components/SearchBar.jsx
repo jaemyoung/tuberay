@@ -23,6 +23,12 @@ const SearchBar = ({ onSearch, onFilterChange, isLoading }) => {
   };
 
   const handleFilterChange = (filterType, value) => {
+    // 새로운 필터 값 계산
+    const newContentType = filterType === 'contentType' ? value : contentType;
+    const newMinViews = filterType === 'minViews' ? Number(value) : minViews;
+    const newMinSubscribers = filterType === 'minSubscribers' ? Number(value) : minSubscribers;
+
+    // 상태 업데이트
     if (filterType === 'contentType') {
       setContentType(value);
     } else if (filterType === 'minViews') {
@@ -31,10 +37,11 @@ const SearchBar = ({ onSearch, onFilterChange, isLoading }) => {
       setMinSubscribers(Number(value));
     }
 
+    // 새로운 값으로 필터 적용
     onFilterChange({
-      contentType: filterType === 'contentType' ? value : contentType,
-      minViews: filterType === 'minViews' ? Number(value) : minViews,
-      minSubscribers: filterType === 'minSubscribers' ? Number(value) : minSubscribers
+      contentType: newContentType,
+      minViews: newMinViews,
+      minSubscribers: newMinSubscribers
     });
   };
 

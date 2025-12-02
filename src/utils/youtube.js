@@ -121,12 +121,12 @@ export const searchVideos = async ({ keyword, maxResults = 10, period = 'all', r
           channelTitle: video.snippet.channelTitle,
           channelId: channelId,
           publishedAt: video.snippet.publishedAt,
-          viewCount: videoStats.viewCount || 0,
-          likeCount: videoStats.likeCount || 0,
-          commentCount: videoStats.commentCount || 0,
-          subscriberCount: channelStats.subscriberCount || 0,
-          videoCount: channelStats.videoCount || 0,
-          channelViewCount: channelStats.viewCount || 0,
+          viewCount: Number(videoStats.viewCount) || 0,
+          likeCount: Number(videoStats.likeCount) || 0,
+          commentCount: Number(videoStats.commentCount) || 0,
+          subscriberCount: Number(channelStats.subscriberCount) || 0,
+          videoCount: Number(channelStats.videoCount) || 0,
+          channelViewCount: Number(channelStats.viewCount) || 0,
           channelContribution: Number(channelContribution),
           performanceMultiplier: Number(performanceMultiplier),
           duration: videoStats.duration || 'PT0S',
@@ -135,7 +135,12 @@ export const searchVideos = async ({ keyword, maxResults = 10, period = 'all', r
       })
     );
 
-    return enrichedVideos;
+    // 중복 제거 (같은 videoId가 여러 번 나올 수 있음)
+    const uniqueVideos = enrichedVideos.filter((video, index, self) =>
+      index === self.findIndex((v) => v.id === video.id)
+    );
+
+    return uniqueVideos;
   } catch (error) {
     console.error('YouTube API 검색 오류:', error);
     throw new Error('영상 검색에 실패했습니다. API 키를 확인해주세요.');
